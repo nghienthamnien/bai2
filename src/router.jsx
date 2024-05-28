@@ -3,6 +3,7 @@ import Layout from "./layout/";
 import HomePage from "./page/home-page";
 import ProductPage from "./page/product-page";
 import UserPage from "./page/user-page";
+import LoginForm from "./components/Login";
 
 const router = createBrowserRouter([
   {
@@ -19,6 +20,10 @@ const router = createBrowserRouter([
       },
       { path: "/users", element: <UserPage /> },
     ],
+  },
+  {
+    path: "/auth/login",
+    element: <LoginForm />,
   },
 ]);
 
