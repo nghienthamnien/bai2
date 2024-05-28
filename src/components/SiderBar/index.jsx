@@ -77,6 +77,9 @@ const SiderBar = ({ open, setOpen }) => {
           />
         </div>
       </div>
+      <div className="header-text">
+        <p></p>
+      </div>
       <ul>{listItem}</ul>
     </div>
   );
