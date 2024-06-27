@@ -1,4 +1,5 @@
 /* eslint-disable react/prop-types */
+import { memo } from "react";
 import "./index.css";
 
 const Pagination = ({ limit, length, handlePagination, currentPage }) => {
@@ -22,4 +23,4 @@ const Pagination = ({ limit, length, handlePagination, currentPage }) => {
     </div>
   );
 };
-export default Pagination;
+export default memo(Pagination);

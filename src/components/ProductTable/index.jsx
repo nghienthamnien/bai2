@@ -1,55 +1,67 @@
-// src/ProductTable.js
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
   EditOutlined,
   DeleteOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
-import productData from "./data";
 import "./index.css";
 import Pagination from "../Pagination";
+import callAPI from "../../utils/callApi";
 
 // eslint-disable-next-line react/prop-types
 export default function ProductTable({ setIsOpen }) {
-  const [products, setProduct] = useState([]);
+  const [products, setProducts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [inputText, setInputText] = useState("");
+  const [totalProduct, setTotalProduct] = useState(0);
+  const [dataLength, setDataLength] = useState(0);
 
-  let filteredData;
-  if (inputText === "") {
-    filteredData = productData;
-  } else {
-    filteredData = productData.filter((el) =>
-      el.name.toLocaleLowerCase().includes(inputText)
-    );
-  }
-  const offset = limit * (currentPage - 1);
+  const fetchProducts = useCallback(async () => {
+    try {
+      const { data } = await callAPI.get(
+        `/products?limit=${limit}&page=${currentPage}`
+      );
+      const { products: productsData, metadata } = data;
+      setDataLength(metadata.length);
+      setTotalProduct(metadata.total);
+      setProducts(productsData);
+    } catch (error) {
+      alert(error);
+    }
+  }, [currentPage, limit]);
 
   useEffect(() => {
-    const currentProduct = filteredData.slice(offset, offset + limit);
-    setProduct(currentProduct);
-  }, [offset, limit, filteredData]);
+    fetchProducts();
+  }, [fetchProducts]);
 
   const handleEdit = (id) => {
     console.log(id);
   };
-  const handleDelete = (id) => {
-    const updatedProducts = products.filter((product) => product.id !== id);
-    setProduct(updatedProducts);
+
+  const handleDelete = async (id) => {
+    await callAPI.delete(`/products/${id}`);
+    fetchProducts();
   };
+
   const handlePagination = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
-  const handleLimit = (e) => {
-    const newLimit = parseInt(e.target.value);
-    setLimit(newLimit);
+
+  const handleLimitChange = (e) => {
+    setLimit(parseInt(e.target.value, 10));
   };
-  const handeInput = (e) => {
-    //convert input text to lower case
-    const lowerCase = e.target.value.toLowerCase();
-    setInputText(lowerCase);
+
+  const handleInputChange = (e) => {
+    setInputText(e.target.value.toLowerCase());
   };
+
+  const filteredProducts = inputText
+    ? products.filter((product) =>
+        product.product_name.toLowerCase().includes(inputText)
+      )
+    : products;
+
   return (
     <>
       <div className="sub-header">
@@ -60,13 +72,13 @@ export default function ProductTable({ setIsOpen }) {
           <input
             className="search-bar-input"
             type="text"
-            placeholder="Tìm kiếm"
-            onChange={handeInput}
-          ></input>
+            placeholder="Search"
+            onChange={handleInputChange}
+          />
         </div>
         <div className="create-btn">
-          <button type="primary" onClick={() => setIsOpen(true)}>
-            + Tạo mới
+          <button type="button" onClick={() => setIsOpen(true)}>
+            + Create New
           </button>
         </div>
       </div>
@@ -74,34 +86,34 @@ export default function ProductTable({ setIsOpen }) {
         <table>
           <thead className="table-head">
             <tr className="table-row-header">
-              <th className="product-name">TÊN SẢN PHẨM</th>
-              <th className="product-price">GIÁ</th>
-              <th className="product-quantity">SỐ LƯỢNG</th>
-              <th className="product-description">MÔ TẢ</th>
-              <th className="product-image">ẢNH</th>
-              <th className="product-action">HÀNH ĐỘNG</th>
+              <th className="product-name">Product Name</th>
+              <th className="product-price">Price</th>
+              <th className="product-quantity">Quantity</th>
+              <th className="product-description">Description</th>
+              <th className="product-image">Image</th>
+              <th className="product-action">Action</th>
             </tr>
           </thead>
           <tbody>
-            {products.map((element) => (
-              <tr key={element.id} className="table-row">
-                <td className="product-name">{element.name}</td>
-                <td className="product-price">{element.price}</td>
-                <td className="product-quantity">{element.quantity}</td>
+            {filteredProducts.map((product) => (
+              <tr key={product.product_id} className="table-row">
+                <td className="product-name">{product.product_name}</td>
+                <td className="product-price">{product.product_price}</td>
+                <td className="product-quantity">{product.product_quantity}</td>
                 <td className="product-description">
-                  Lorem ipsum dolor sit amet
+                  {product.product_description}
                 </td>
                 <td className="product-image">
-                  <img src={element.image} alt={element.name} />
+                  <img src={product.product_imageUrl} alt={"img"} />
                 </td>
                 <td className="product-action">
                   <EditOutlined
                     className="action-icon"
-                    onClick={() => handleEdit(element.id)}
+                    onClick={() => handleEdit(product.product_id)}
                   />
                   <DeleteOutlined
                     className="action-icon"
-                    onClick={() => handleDelete(element.id)}
+                    onClick={() => handleDelete(product.product_id)}
                   />
                 </td>
               </tr>
@@ -115,20 +127,21 @@ export default function ProductTable({ setIsOpen }) {
               id="number"
               name="number"
               required
-              onClick={handleLimit}
-              defaultValue={10}
+              onChange={handleLimitChange}
+              value={limit}
             >
-              <option value="5">5</option>
-              <option value="6">6</option>
-              <option value="7">7</option>
-              <option value="8">8</option>
-              <option value="9">9</option>
-              <option value="10">10</option>
+              {(dataLength > 5 ? [6, 7, 8, 9, 10] : [dataLength]).map(
+                (value) => (
+                  <option key={value} value={value}>
+                    {value}
+                  </option>
+                )
+              )}
             </select>
-            &nbsp; of {filteredData.length}
+            &nbsp; of {totalProduct}
           </div>
           <Pagination
-            length={filteredData.length}
+            length={totalProduct}
             limit={limit}
             handlePagination={handlePagination}
             currentPage={currentPage}

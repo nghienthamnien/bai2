@@ -68,6 +68,9 @@
   width: 200px;
   height: 47px;
   padding: 16px 20px 16px 20px;
+  overflow: hidden;
+  white-space: nowrap; /* Don't forget this one */
+  text-overflow: ellipsis;
 }
 .product-price {
   text-align: center;
@@ -86,6 +89,9 @@
   width: 313px;
   height: 47px;
   padding: 16px 20px 16px 20px;
+  overflow: hidden;
+  white-space: nowrap; /* Don't forget this one */
+  text-overflow: ellipsis;
 }
 .product-image {
   display: flex;

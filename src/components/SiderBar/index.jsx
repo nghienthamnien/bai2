@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import useDocumentTitle from "../../utils/setTitle";
@@ -12,6 +12,11 @@ const SiderBar = ({ open, setOpen }) => {
   const headerText = menu[activeId].description;
 
   useDocumentTitle(headerText);
+
+  useEffect(() => {
+    const url = window.location.pathname;
+    if (url === "/users") setActiveId(1);
+  }, []);
 
   const handleClick = (id) => {
     setActiveId(id);

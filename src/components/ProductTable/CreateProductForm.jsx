@@ -1,5 +1,6 @@
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
+import callAPI from "../../utils/callApi";
 
 // eslint-disable-next-line react/prop-types
 export default function CreateProductForm(setIsOpen) {
@@ -12,10 +13,22 @@ export default function CreateProductForm(setIsOpen) {
       .typeError("Quantity must be a number")
       .required("Quantity is required"),
     description: Yup.string().required("Description is required"),
-    image: Yup.string()
+    imageUrl: Yup.string()
       .url("Invalid URL format")
       .required("Image URL is required"),
   });
+
+  const handleSubmit = async (values) => {
+    try {
+      await callAPI.post("/products", values);
+      alert("Them thanh cong");
+    } catch (error) {
+      console.log(error);
+      alert(error.response.data.message);
+    } finally {
+      setIsOpen(false);
+    }
+  };
 
   return (
     <div className="create-form">
@@ -26,12 +39,10 @@ export default function CreateProductForm(setIsOpen) {
           price: "",
           quantity: 0,
           description: "",
-          image: "",
+          imageUrl: "",
         }}
         validationSchema={validationSchema}
-        onSubmit={() => {
-          setIsOpen(false);
-        }}
+        onSubmit={handleSubmit}
       >
         {({ isSubmitting }) => (
           <Form>
@@ -76,10 +87,10 @@ export default function CreateProductForm(setIsOpen) {
             </div>
 
             <div className="form-group">
-              <label htmlFor="image">Ảnh sản phẩm</label>
-              <Field type="url" name="image" />
+              <label htmlFor="imageUrl">Ảnh sản phẩm</label>
+              <Field type="url" name="imageUrl" />
               <ErrorMessage
-                name="image"
+                name="imageUrl"
                 component="div"
                 className="error-message"
               />

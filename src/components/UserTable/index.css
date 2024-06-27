@@ -29,6 +29,9 @@
   width: 200px;
   height: 47px;
   padding: 16px 20px 16px 20px;
+  overflow: hidden;
+  white-space: nowrap; /* Don't forget this one */
+  text-overflow: ellipsis;
 }
 .user-email {
   text-align: center;

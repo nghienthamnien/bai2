@@ -63,6 +63,9 @@ ul li {
   min-height: 100vh;
   margin: 0;
   position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .page-content {
   padding: 2rem 5rem;

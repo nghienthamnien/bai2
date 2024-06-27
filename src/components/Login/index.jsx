@@ -1,12 +1,19 @@
 import { useState } from "react";
+import axios from "axios";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { EyeInvisibleOutlined, EyeOutlined } from "@ant-design/icons";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { updateAuthenticate } from "../../slice/authsSlice";
 import "./index.css";
 
 const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
-
+  const dispatch = useDispatch();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const prevPath = location.state ? location.state.prevPath : "products";
   const initialValues = {
     email: "",
     password: "",
@@ -19,7 +26,24 @@ const LoginForm = () => {
   });
 
   const onSubmit = (values) => {
-    console.log("Form data", values);
+    const user = { ...values };
+    (async () => {
+      try {
+        const { data } = await axios.post(
+          "http://localhost:8080/auth/login",
+          user,
+          { withCredentials: true }
+        );
+        if (data) {
+          const { access_token } = data;
+          localStorage.setItem("auth_token", access_token);
+          dispatch(updateAuthenticate(true));
+          navigate(`${prevPath}`);
+        }
+      } catch (error) {
+        alert(error.response.data.message);
+      }
+    })();
   };
 
   const togglePasswordVisibility = () => {

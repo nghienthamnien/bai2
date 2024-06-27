@@ -1,19 +1,33 @@
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
+import callAPI from "../../utils/callApi";
+import PropTypes from "prop-types";
 
-// eslint-disable-next-line react/prop-types
 export default function CreateUserForm(setIsOpen) {
   const validationSchema = Yup.object({
     name: Yup.string().required("Name is required"),
     email: Yup.string()
       .email("Invalid email format")
       .required("Email is required"),
-    date: Yup.date().required("Date of birth is required"),
+    date_of_birth: Yup.date().required("Date of birth is required"),
     phone: Yup.string().required("Phone number is required"),
     avatar: Yup.string()
       .url("Invalid URL format")
       .required("Avatar URL is required"),
+    password: Yup.string().required("Password is require").default("12345678"),
   });
+
+  const handleSubmit = async (values, { setSubmitting }) => {
+    try {
+      await callAPI.post("/users", values);
+      alert("Them thanh cong");
+    } catch (error) {
+      alert(error.response.data.message);
+    } finally {
+      setIsOpen(false);
+      setSubmitting(false);
+    }
+  };
 
   return (
     <div className="create-form">
@@ -22,20 +36,15 @@ export default function CreateUserForm(setIsOpen) {
         initialValues={{
           name: "",
           email: "",
-          date: "",
+          date_of_birth: "",
           phone: "",
           avatar: "",
+          password: "12345678",
         }}
         validationSchema={validationSchema}
-        onSubmit={(values, { setSubmitting }) => {
-          // Here you can handle form submission, like sending data to the server
-          // For now, just log the form values
-          console.log(values);
-          setIsOpen(false); // Close the modal after form submission
-          setSubmitting(false);
-        }}
+        onSubmit={handleSubmit}
       >
-        {({ isSubmitting }) => (
+        {() => (
           <Form>
             <div className="form-group">
               <label htmlFor="name">Tên người dùng</label>
@@ -58,10 +67,20 @@ export default function CreateUserForm(setIsOpen) {
             </div>
 
             <div className="form-group">
-              <label htmlFor="date">Ngày sinh</label>
-              <Field type="date" name="date" />
+              <label htmlFor="password">Password</label>
+              <Field type="text" name="password" />
               <ErrorMessage
-                name="date"
+                name="password"
+                component="div"
+                className="error-message"
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="date_of_birth">Ngày sinh</label>
+              <Field type="date" name="date_of_birth" />
+              <ErrorMessage
+                name="date_of_birth"
                 component="div"
                 className="error-message"
               />
@@ -95,11 +114,7 @@ export default function CreateUserForm(setIsOpen) {
               >
                 Hủy
               </button>
-              <button
-                className="accept-btn"
-                type="submit"
-                disabled={isSubmitting}
-              >
+              <button className="accept-btn" type="submit">
                 Tạo mới
               </button>
             </div>
@@ -109,3 +124,7 @@ export default function CreateUserForm(setIsOpen) {
     </div>
   );
 }
+
+CreateUserForm.propTypes = {
+  setIsOpen: PropTypes.func.isRequired,
+};
