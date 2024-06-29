@@ -20,7 +20,7 @@ export default function ProductTable({ setIsOpen }) {
   const fetchProducts = useCallback(async () => {
     try {
       const { data } = await callAPI.get(
-        `/products?limit=${limit}&page=${currentPage}`
+        `/cameras?limit=${limit}&page=${currentPage}`
       );
       const { products: productsData, metadata } = data;
       setDataLength(metadata.length);
@@ -86,26 +86,22 @@ export default function ProductTable({ setIsOpen }) {
         <table>
           <thead className="table-head">
             <tr className="table-row-header">
-              <th className="product-name">Product Name</th>
-              <th className="product-price">Price</th>
-              <th className="product-quantity">Quantity</th>
-              <th className="product-description">Description</th>
-              <th className="product-image">Image</th>
+              <th className="product-name">ID</th>
+              <th className="product-price">Name</th>
+              <th className="product-quantity">IPv4</th>
+              <th className="product-description">Status</th>
+              <th className="product-image">Position</th>
               <th className="product-action">Action</th>
             </tr>
           </thead>
           <tbody>
             {filteredProducts.map((product) => (
               <tr key={product.product_id} className="table-row">
-                <td className="product-name">{product.product_name}</td>
-                <td className="product-price">{product.product_price}</td>
-                <td className="product-quantity">{product.product_quantity}</td>
-                <td className="product-description">
-                  {product.product_description}
-                </td>
-                <td className="product-image">
-                  <img src={product.product_imageUrl} alt={"img"} />
-                </td>
+                <td className="product-name">{product.camera_id}</td>
+                <td className="product-price">{product.camera_name}</td>
+                <td className="product-quantity">{product.camera_ipv4}</td>
+                <td className="product-description">{product.camera_status}</td>
+                <td className="product-image">{product.camera_position}</td>
                 <td className="product-action">
                   <EditOutlined
                     className="action-icon"

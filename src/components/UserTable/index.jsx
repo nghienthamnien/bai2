@@ -21,7 +21,7 @@ export default function UserTable({ setIsOpen }) {
   const fetchUsers = useCallback(async () => {
     try {
       const { data } = await callAPI.get(
-        `/users?limit=${limit}&page=${currentPage}`
+        `/auth/users?limit=${limit}&page=${currentPage}`
       );
       const { users: usersData, metadata } = data;
       setTotalData(metadata.total);
@@ -177,13 +177,11 @@ const TableFooter = memo(
 function TableRow({ user, handleEdit, handleDelete }) {
   return (
     <tr className="table-row">
-      <td className="user-avatar">
-        <img src={user.user_avatar} alt={"img"} />
-      </td>
-      <td className="user-name">{user.user_name}</td>
-      <td className="user-email">{user.user_email}</td>
-      <td className="user-date">{user.date_of_birth.split("T")[0]}</td>
-      <td className="user-phone">{user.user_phone}</td>
+      <td className="user-avatar">{user.id}</td>
+      <td className="user-name">{user.full_name}</td>
+      <td className="user-email">{user.email}</td>
+      <td className="user-date">{user.address}</td>
+      <td className="user-phone">{user.phone_number}</td>
       <td className="user-action">
         <EditOutlined
           className="action-icon"
