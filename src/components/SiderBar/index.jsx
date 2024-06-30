@@ -16,6 +16,7 @@ const SiderBar = ({ open, setOpen }) => {
   useEffect(() => {
     const url = window.location.pathname;
     if (url === "/users") setActiveId(1);
+    if (url === "/search") setActiveId(2);
   }, []);
 
   const handleClick = (id) => {

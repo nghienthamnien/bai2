@@ -17,5 +17,12 @@ const data = [
     link: "users",
     description: "QUẢN LÝ USERS",
   },
+  {
+    icon: productIcon,
+    id: 2,
+    title: "Tìm kiếm",
+    link: "search",
+    description: "Tìm kiếm",
+  },
 ];
 export default data;
